@@ -104,7 +104,7 @@ var output = new app.output($('#output'));
 
 var lk = new app.tsp.LinKernighan(nodes);
 var finalTour = lk.solve();
-
+finalTour = twoOpt(finalTour)
 output.println("Final Tour: " + finalTour.toString());
 
 app.drawEdges(finalTour.tour);
