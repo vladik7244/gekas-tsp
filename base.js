@@ -52,7 +52,7 @@ app.tsp.Tour = function (routeManager) {
     'use strict';
 
     this.tour = [];
-    this.cost = 0;
+    this.cost = null;
 
     this.setCities = function (cities) {
         $(cities).each(function (index, city) {
@@ -73,11 +73,11 @@ app.tsp.Tour = function (routeManager) {
     this.setCity = function (routePosition, city) {
         this.tour[routePosition] = city;
         // Reset cost since the route is being modified
-        this.cost = 0;
+        this.cost = null;
     };
 
     this.getCost = function () {
-        if (this.cost === 0) {
+        if (this.cost === null) {
             var routeCost = 0,
                 idx;
 
