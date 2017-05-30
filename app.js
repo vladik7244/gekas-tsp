@@ -98,7 +98,7 @@
 
 //var nodes = app.generateRandomDeltaPath(500, 10, 800);
 
-app.drawEdges(nodes);
+app.drawEdges(nodes, 'cnsIn');
 
 var output = new app.output($('#output'));
 
@@ -107,4 +107,12 @@ var finalTour = lk.solve();
 
 output.println("Final Tour: " + finalTour.toString());
 
-app.drawEdges(finalTour.tour);
+app.drawEdges(finalTour.tour, 'cnsOut');
+
+
+	 function swap(start, end, size, lst){
+		for(let i=0;i<size;i++){
+            lst.splice(start, 0, lst.remove(end));
+		}
+	}
+

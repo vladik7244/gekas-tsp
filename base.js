@@ -1,7 +1,3 @@
-/**
- * Created by bruno on 03/05/16.
- */
-
 var app = app || {};
 app.tsp = app.tsp || {};
 
@@ -25,7 +21,7 @@ app.tsp.PathManager = function (nodes) {
         }.bind(this);
 
         point.toString = function () {
-            return point.name + ":(" + point.x + "," + point.y + ")";
+            return point.name;
         };
 
         return point;
@@ -105,37 +101,25 @@ app.tsp.Tour = function (routeManager) {
     };
 
     this.toString = function () {
-        var geneString = "|",
-            i;
-        for (i = 0; i < this.tourSize(); i += 1) {
+        let geneString;
+        for (let i = 0; i < this.tourSize(); i += 1) {
             geneString += this.getCity(i).toString() + "|";
         }
         return geneString;
     };
-
-
 };
 
-app.drawEdges = function (points) {
-    'use strict';
-    var canvasHeight = 900, canvasWidth = 900;
+app.drawEdges = function (points, cnsId) {
 
-    var context = $('<canvas></canvas>')
-		.attr('id', 'cns')
-        .attr('height', canvasHeight)
-        .attr('width', canvasWidth)
-		.attr('style', 'outline: 2px solid red')
-        .appendTo($('.target'))
-        [0]
-        .getContext('2d');
+    var context = $(`#${cnsId}`)[0]
+                    .getContext('2d');
 
     context.strokeStyle = '#000';
 
     context.lineWidth = 5;
     
-    context.scale(0.1,0.1);  
-    context.strokeStyle = 
-    context.beginPath();
+    context.scale(0.1, 0.1);  
+    context.strokeStyle = context.beginPath();
 
     context.moveTo(points[0].x, points[0].y);
 
@@ -144,9 +128,10 @@ app.drawEdges = function (points) {
     });
 
     context.stroke();
-    
+    context.font = "160px Arial"
     // Draw the points that mark the cities
     $(points).each(function (index, point) {
+        context.fillText(point.name, point.x, point.y);
         app.drawPoint(point.x, point.y, context);
     });
 };
