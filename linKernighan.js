@@ -1,51 +1,36 @@
-/**
- * Created by bruno on 03/05/16.
- */
+function linKernighan(nodes) {
+  const pathManager = new PathManager(nodes)
+  let tour = new Tour(pathManager)
 
-var app = app || {};
-app.tsp = app.tsp || {};
+  tour.usingTourManagersPoints()
 
-app.tsp.LinKernighan = function (nodes) {
-    'use strict';
+  window.stdout.println("Initial cost: " + tour.getCost())
 
-    this.tourManager = new app.tsp.PathManager(nodes);
+  for (let i = 0; i < tour.size(); i++) {
 
-    this.solve = function () {
-        var tour = new app.tsp.Tour(this.tourManager),
-            i,
-            j;
+    for (let j = i; j < tour.size(); j++) {
+      if (j === i) {
+        continue;
+      }
 
-        tour.usingTourManagersPoints();
+      const newTour = new Tour(pathManager)
+      newTour.setCities(tour.path)
 
-        window.output.println("Initial cost: " + tour.getCost());
+      // Switch two cities
+      const cityI = newTour.getCity(i)
+      const cityJ = newTour.getCity(j)
 
-        for (i = 0; i < tour.tourSize(); i++) {
+      newTour.setCity(j, cityI)
+      newTour.setCity(i, cityJ)
 
-            for (j = i; j < tour.tourSize(); j++) {
-                if (j === i) {
-                    continue;
-                }
-
-                var newTour = new app.tsp.Tour(this.tourManager);
-                newTour.setCities(tour.tour);
-
-                // Switch two cities
-                var cityI = newTour.getCity(i),
-                    cityJ = newTour.getCity(j);
-
-                newTour.setCity(j, cityI);
-                newTour.setCity(i, cityJ);
-
-                // Decide if the neighbour solution should be accepted
-                if (tour.getCost() > newTour.getCost()) {
-                    tour = newTour;
-                }
-            }
-        }
-
-        window.output.println("Final cost: " + tour.getCost());
-
-        return tour;
-
+      // Decide if the neighbour solution should be accepted
+      if (tour.getCost() > newTour.getCost()) {
+        tour = newTour
+      }
     }
-};
+  }
+
+  window.stdout.println("Final cost: " + tour.getCost())
+
+  return tour
+}
