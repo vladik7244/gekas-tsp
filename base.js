@@ -1,7 +1,3 @@
-/**
- * Created by bruno on 03/05/16.
- */
-
 var app = app || {};
 app.tsp = app.tsp || {};
 
@@ -19,23 +15,25 @@ app.tsp.PathManager = function (nodes) {
         /**
          * Calculate the cost between the current point and a given point
          */
-        point.costTo = function (otherPoint) {
-            // Calculate distance using the pythagorean theorem
-            return Math.ceil(Math.sqrt( (point.x - otherPoint.x) * (point.x - otherPoint.x) + (point.y - otherPoint.y) * (point.y - otherPoint.y) ));
-        }.bind(this);
+        //      point.costTo = function (otherPoint) {
+        //       // Calculate distance using the pythagorean theorem
+        //   return Math.ceil(Math.sqrt( (point.x - otherPoint.x) * (point.x - otherPoint.x) + (point.y - otherPoint.y) * (point.y - otherPoint.y) ));
+        // }.bind(this);
 
-        point.toString = function () {
-            return point.name + ":(" + point.x + "," + point.y + ")";
-        };
+        //point.toString = function () {
+        //  return point.name + ":(" + point.x + "," + point.y + ")";
+        //};
 
-        return point;
+        //return point;
+        return Object.assign({}, point, {
+            costTo: otherPoint => Math.ceil(Math.sqrt( (point.x - otherPoint.x) * (point.x - otherPoint.x) + (point.y - otherPoint.y) * (point.y - otherPoint.y) ))
+            toString: () => point.name + ":(" + point.x + "," + point.y + ")"
+        });
     };
 
     // Convert nodes to City objects
     var t = {};
-    t.destinationCities = $(nodes).map(function (index, point) {
-        return this.pointToCity(point);
-    }.bind(this));
+    t.destinationCities = $(nodes).map(point => this.pointToCity(point));
 
     t.getCities = function () {
         return t.destinationCities;
@@ -112,8 +110,6 @@ app.tsp.Tour = function (routeManager) {
         }
         return geneString;
     };
-
-
 };
 
 app.drawEdges = function (points) {

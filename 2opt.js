@@ -8,7 +8,7 @@ function twoOpt(tour) {
         ])
         return newTour
     }
-
+    
     let improvements = 1
     let needBreak
     let N = tour.tourSize()
@@ -30,5 +30,6 @@ function twoOpt(tour) {
             if (needBreak) break
         }
     }
+
     return bestRoute
 }
