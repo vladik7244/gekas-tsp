@@ -107,11 +107,15 @@ let twoOptTour = twoOpt(nnTour)
 let threeOpt = new ThreeOpt()
 let threeOptTour = threeOpt.DoThreeOpt(nnTour)
 
+let orOpt = new OrOpt()
+let orOptTour = orOpt.DoOrOpt(nnTour)
+
 stdout.println("Initial Cost: " + nnTour.getCost());
 stdout.println("Two Opt Cost: " + twoOptTour.getCost());
 stdout.println("3Opt cost: " + threeOptTour.getCost());
+stdout.println("OrOpt cost: " + orOptTour.getCost());
 stdout.println("Final Tour: " + threeOptTour.toString());
 
-drawEdges(c1, nnTour.path);
-drawEdges(c2, threeOptTour.path);
+drawEdges(c1, threeOptTour.path);
+drawEdges(c2, orOptTour.path);
 //drawEdges(c2, shortestPath);

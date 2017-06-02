@@ -1,12 +1,12 @@
 /**
  * Created by gekas on 31.05.2017.
  */
-//  function printCitiesNameToConsole (cities){
-//     let result = "";
-//     for(let i = 0; i < cities.length; i++) result += cities[i].name + " ";
-//
-//     console.log(result);
-// }
+ function printCitiesNameToConsole (cities){
+    let result = "";
+    for(let i = 0; i < cities.length; i++) result += cities[i].name + " ";
+
+    console.log(result);
+}
 
 class ThreeOpt{
      constructor(){
