@@ -4,42 +4,53 @@
     <meta charset="UTF-8">
     <title>Lin Kernighan TSP</title>
     <style media="screen">
-      .target > canvas {
-        float: left;
-        clear: both;
-        outline: 2px solid grey;
-        flex-basis: 50%;
-      }
-      .target {
-        display: flex;
-      }
-      .canvasWrapper{
-        float: left;
-        width: 650px;
-        height: 600px;
-        overflow: scroll;
-      }
+        body, html {
+            margin: 0;
+            padding: 0;
+        }
+        * {
+            font-family: sans-serif;
+        }
+        .canvas-wrapper > canvas {
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            width: 100%;
+        }
+        .canvas-wrapper {
+            width: 50%;
+            float: left;
+            padding-right: 10px;
+            box-sizing: border-box;
+        }
+        #target {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px 0 10px 10px;
+            clear: both;
+        }
+        #output {
+            width: 100%;
+            resize: vertical;
+        }
+        .box {
+            padding: 10px;
+        }
+        .clearfix {
+            clear: both;
+        }
     </style>
 </head>
 <body>
 
-<div class="target">
-  <div class="canvasWrapper">
-    <canvas id = "cnsIn" width="900px" height="900px"></canvas>
-  </div>
-  <div class="canvasWrapper">
-    <canvas id = "cnsOut" width="900px" height="900px" ></canvas>
-  </div>
+<div id="target"></div>
+<div class="clearfix"></div>
+<div class="box">
+    <span style="display: block; clear: both;">Output:</span>
+    <textarea id="output" readonly rows="10" cols="50"></textarea>
 </div>
 
-<p>
-    <p>Output:</p>
-    <textarea id="output" readonly rows="10" cols="50"></textarea>
-</p>
-
-
-<!--<script src="https://cdn.jsdelivr.net/jquery/2.2.3/jquery.min.js"></script>-->
-<script src="jquery.min.js"></script>
+<script src="NN.js"></script>
+<script src="2opt.js"></script>
+<script src="3opt.js"></script>
 <script src="base.js"></script>
 <script src="linKernighan.js"></script>
 <script src="app.js"></script>

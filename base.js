@@ -1,168 +1,217 @@
-var app = app || {};
-app.tsp = app.tsp || {};
+class PathManager {
+  constructor(nodes) {
+    this.costs = new Map()
+    this._destinationCities = nodes.map(PathManager.pointToCity)
+  }
 
-app.tsp.PathManager = function (nodes) {
-    //'use strict';
+  getCities() {
+    return this._destinationCities
+  }
 
-    // Here we're going to save all calculated costs
-    this.costs = {};
+  getCity(index) {
+    return this._destinationCities[index]
+  }
 
-    /**
-     * Convert a object {x, y} to a City
-     */
-    this.pointToCity = function (point) {
+  static getLength(cities){
 
-        /**
-         * Calculate the cost between the current point and a given point
-         */
-        point.costTo = function (otherPoint) {
-            // Calculate distance using the pythagorean theorem
-            return Math.ceil(Math.sqrt( (point.x - otherPoint.x) * (point.x - otherPoint.x) + (point.y - otherPoint.y) * (point.y - otherPoint.y) ));
-        }.bind(this);
+  }
 
-        point.toString = function () {
-            return point.name;
-        };
+  static pointToCity(point) {
+    return new CityPoint(point)
+  }
+}
 
-        return point;
-    };
+class CityPoint {
+  constructor(point) {
+    this.point = point;
+  }
 
-    // Convert nodes to City objects
-    var t = {};
-    t.destinationCities = $(nodes).map(function (index, point) {
-        return this.pointToCity(point);
-    }.bind(this));
+  costTo(otherPoint) {
+    const {x: x1, y: y1} = this.point
+    const {x: x2, y: y2} = otherPoint
+    return Math.ceil(Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2))
+  }
 
-    t.getCities = function () {
-        return t.destinationCities;
-    };
+  get x() {
+    return this.point.x
+  }
 
-    t.getCity = function (index) {
-        return t.destinationCities[index];
-    };
+  get y() {
+    return this.point.y
+  }
 
-    return t;
-};
+  get name() {
+    return this.point.name
+  }
 
-app.tsp.Tour = function (routeManager) {
-    'use strict';
+  toString() {
+    const {name, x, y} = this.point
+    return `${name}`
+  }
+}
 
-    this.tour = [];
-    this.cost = 0;
 
-    this.setCities = function (cities) {
-        $(cities).each(function (index, city) {
-            this.setCity(index, city);
-        }.bind(this));
-        return this;
-    };
+class Tour {
+  constructor(routeManager) {
+    this.path = []
+    this._cost = null
+    this._routeManager = routeManager
 
-    this.usingTourManagersPoints = function () {
-        this.setCities(routeManager.getCities());
-        return this;
-    };
+     // this.usingTourManagersPoints()
+  }
 
-    this.getCity = function (routePosition) {
-        return this.tour[routePosition];
-    };
+  usingTourManagersPoints() {
+    this.setCities(this._routeManager.getCities())
+    return this
+  }
+  
+  setCity(routePosition, city) {
+    this.path[routePosition] = city
+    this._cost = null // Reset cost since the route is being modified
+    return this
+  }
 
-    this.setCity = function (routePosition, city) {
-        this.tour[routePosition] = city;
-        // Reset cost since the route is being modified
-        this.cost = 0;
-    };
+  getCity(routePosition) {
+    return this.path[routePosition]
+  }
 
-    this.getCost = function () {
-        if (this.cost === 0) {
-            var routeCost = 0,
-                idx;
+  setCities(cities) {
+    this.path = [...cities]
+    this._cost = null // Reset cost since the route is being modified
+    return this
+  }
 
-            // Loop through all cities and get total cost
-            for (idx = 0; idx < this.tourSize(); idx++) {
-                var fromCity = this.getCity(idx),
-                    destinationCity;
-                // If we're at the last city, we need to set the first city as
-                // the destination city
-                if (idx + 1 < this.tourSize()) {
-                    destinationCity = this.getCity(idx + 1);
-                }
-                else {
-                    destinationCity = this.getCity(0);
-                }
-                routeCost += fromCity.costTo(destinationCity);
-            }
-            this.cost = routeCost;
-        }
-        return this.cost;
-    };
+   static getTourCost(cities){
+       //if (this._cost === null || this._cost === undefined) {
+           let routeCost = 0
+           for (let i = 0; i < cities.length; i++) {
+               const fromCity = cities[i]
+               const destinationCity = i + 1 < cities.length
+                   ? cities[i + 1]
+                   : cities[0]
+               routeCost += fromCity.costTo(destinationCity)
+           }
+           this._cost = routeCost
+       //}
+       return this._cost
+   }
 
-    this.tourSize = function () {
-        return this.tour.length;
-    };
+  getCost() {
+    return this.constructor.getTourCost(this.path)
+      // if (this._cost === null) {
+      //     let routeCost = 0
+      //     for (let i = 0; i < this.path.length; i++) {
+      //         const fromCity = this.path[i]
+      //         const destinationCity = i + 1 < this.path.length
+      //             ? this.path[i + 1]
+      //             : this.path[0]
+      //         routeCost += fromCity.costTo(destinationCity)
+      //     }
+      //     this._cost = routeCost
+      // }
+      // return this._cost
+  }
 
-    this.toString = function () {
-        let geneString;
-        for (let i = 0; i < this.tourSize(); i += 1) {
-            geneString += this.getCity(i).toString() + "|";
-        }
-        return geneString;
-    };
-};
 
-app.drawEdges = function (points, cnsId) {
 
-    var context = $(`#${cnsId}`)[0]
-                    .getContext('2d');
+  size() {
+    return this.path.length
+  }
 
-    context.strokeStyle = '#000';
+  toString() {
+    return this.path.map(city => city.toString()).join('|')
+  }
+}
 
-    context.lineWidth = 5;
-    
-    context.scale(0.1, 0.1);  
-    context.strokeStyle = context.beginPath();
+function createCanvas(width, height) {
+  const wrapper = document.createElement('div')
+  wrapper.classList.add('canvas-wrapper')
+  const canvas = document.createElement('canvas')
+  wrapper.appendChild(canvas)
+  canvas.width = width
+  canvas.height = height
+  return {
+    canvas,
+    wrapper,
+  }
+}
 
-    context.moveTo(points[0].x, points[0].y);
+function attachCanvas(canvas, target) {
+  target.appendChild(canvas)
+}
 
-    $(points).each(function (index, point) {
-        context.lineTo(point.x, point.y);
-    });
+function drawEdges(canvas, points) {
+    const ctx = canvas.getContext('2d')
+    const g = new Graphics(ctx)
+    g.scale(0.1, 0.1)
 
-    context.stroke();
-    context.font = "160px Arial"
-    // Draw the points that mark the cities
-    $(points).each(function (index, point) {
-        context.fillText(point.name, point.x, point.y);
-        app.drawPoint(point.x, point.y, context);
-    });
-};
-
-app.drawPoint = function (x, y, canvas) {
-    canvas.beginPath();
-    canvas.arc(x, y, 3, 0, 2 * Math.PI, true);
-    canvas.fill();
-};
-
-app.output = function ($elem) {
-    this.element = $elem;
-
-    this.println = function (txt) {
-        this.element.val(this.element.val() + '\n' + txt);
-    };
-};
-
-app.generateRandomDeltaPath = function (size, min, max) {
-    var nodes = [];
-
-    for (var i = 0; i < size; i++) {
-        var valX = Math.floor(Math.random() * (max - min + 1) + min);
-        var valY = Math.floor(Math.random() * (max - min + 1) + min);
-        nodes.push({x: valX, y: valY, name: i});
+    for (let i = 0; i < points.length; i++) {
+      const fromPoint = points[i]
+      const toPoint = i >= points.length - 1
+        ? points[0]
+        : points[i + 1]
+      g.drawLine(fromPoint.x, fromPoint.y, toPoint.x, toPoint.y, {width: 5})
     }
 
-    // Para obter um d-path, temos de ter a ultima aresta ligada a um
-    // dos nós anteriores
-    var node = Math.floor(Math.random() * (size + 1));
-    nodes.push({x: nodes[node].x, y: nodes[node].y, name: node + "x"});
+    points.forEach(point => {
+      g.drawPoint(point.x, point.y, 30)
 
-    return nodes;
+    })
+
+    ctx.font = "30px Arial";
+    points.forEach(point => {
+        ctx.fillText(point.name, point.x, point.y)
+    })
+}
+
+class Graphics {
+  constructor(ctx) {
+    this.ctx = ctx
+  }
+
+  scale(xs, ys) {
+    this.ctx.scale(xs, ys)
+  }
+
+  drawLine(x1, y1, x2, y2, {color = '#000', width = 1} = {}) {
+    this.ctx.beginPath()
+    this.ctx.strokeStyle = color
+    this.ctx.lineWidth = width
+    this.ctx.moveTo(x1, y1)
+    this.ctx.lineTo(x2, y2)
+    this.ctx.stroke()
+  }
+
+  drawPoint(x, y, radius = 1) {
+    this.ctx.beginPath()
+    this.ctx.arc(x, y, radius, 0, 2 * Math.PI, true)
+    this.ctx.fill()
+  }
+}
+
+
+class Output {
+  constructor(elem) {
+    this.element = elem
+  }
+
+  println(txt) {
+    this.element.innerHTML += `${txt}\n`
+  }
+}
+
+function generateRandomDeltaPath(size, min, max) {
+  const nodes = []
+
+  for (let i = 0; i < size; i++) {
+    const x = Math.floor(Math.random() * (max - min + 1) + min)
+    const y = Math.floor(Math.random() * (max - min + 1) + min)
+    nodes.push({x, y, name: i})
+  }
+
+  const randomIndex = Math.floor(Math.random() * (size + 1))
+  const randomNode = nodes[randomIndex]
+  nodes.push({x: randomNode.x, y: randomNode.y, name: randomIndex + "x"})
+
+  return nodes
 }
